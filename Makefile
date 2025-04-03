@@ -1,48 +1,41 @@
 # === Config ===
 NVCC = nvcc
 CXX = g++
-CXXFLAGS = -I./module
+CXXFLAGS = -I./module -I./optimizer
 NVCCFLAGS = -I./module
 
 # === Paths ===
 MODULE_DIR = module
 TEST_DIR = test
 OBJ_DIR = build
+OPT_DIR = optimizer
 
 # === Files ===
 LINEAR_OBJ = $(OBJ_DIR)/Linear.o
-TEST_OBJ = $(OBJ_DIR)/test_linear.o
-XOR_OBJ = $(OBJ_DIR)/train_xor.o
-
-EXEC_TEST = test_linear
-EXEC_XOR = train_xor
+TEST_OBJ = $(OBJ_DIR)/test_train.o
+SGD_OBJ = $(OBJ_DIR)/SGD.o
+EXEC = test_train
 
 # === Targets ===
-all: $(EXEC_TEST) $(EXEC_XOR)
+all: $(EXEC)
 
-$(EXEC_TEST): $(LINEAR_OBJ) $(TEST_OBJ)
-	$(NVCC) -o $@ $^
-
-$(EXEC_XOR): $(LINEAR_OBJ) $(XOR_OBJ)
+$(EXEC): $(LINEAR_OBJ) $(TEST_OBJ) $(SGD_OBJ)
 	$(NVCC) -o $@ $^
 
 $(LINEAR_OBJ): $(MODULE_DIR)/Linear.cu
 	mkdir -p $(OBJ_DIR)
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-$(TEST_OBJ): $(TEST_DIR)/test_linear.cpp
+$(TEST_OBJ): $(TEST_DIR)/test_train.cpp
 	mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(NVCC) $(CXXFLAGS) -c $< -o $@
 
-$(XOR_OBJ): $(TEST_DIR)/train_xor.cpp
+$(SGD_OBJ): $(OPT_DIR)/SGD.cu
 	mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-test: $(EXEC_TEST)
-	./$(EXEC_TEST)
-
-xor: $(EXEC_XOR)
-	./$(EXEC_XOR)
+test: $(EXEC)
+	./$(EXEC)
 
 clean:
-	rm -rf $(OBJ_DIR) $(EXEC_TEST) $(EXEC_XOR)
+	rm -rf $(OBJ_DIR) $(EXEC)
