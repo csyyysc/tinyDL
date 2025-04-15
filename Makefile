@@ -26,8 +26,8 @@ TOOL_CPP_OBJ= $(patsubst $(TOOL_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(TOOL_CPP_SRC))
 TOOL_OBJ    = $(TOOL_CPP_OBJ) $(TOOL_CU_OBJ)
 
 # === Testing control ===
-TEST_NAME   ?= test_activation
-TEST_SRC    = $(TEST_DIR)/$(TEST_NAME).cu
+TEST_NAME   ?= test_tensor
+TEST_SRC    = $(TEST_DIR)/$(TEST_NAME).cpp
 TEST_OBJ    = $(OBJ_DIR)/$(TEST_NAME).o
 EXEC        = $(TEST_NAME)
 
@@ -53,7 +53,7 @@ $(OBJ_DIR)/%.o: $(TOOL_DIR)/%.cpp | $(OBJ_DIR)
 $(OBJ_DIR)/%.o: $(TOOL_DIR)/%.cu | $(OBJ_DIR)
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/%.o: $(TEST_DIR)/%.cu | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJ_DIR)
 	$(NVCC) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
